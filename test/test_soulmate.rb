@@ -2,7 +2,7 @@
 
 require 'helper'
 
-class TestSoulmate < Test::Unit::TestCase
+class TestSoulmate < Minitest::Test
   def test_integration_can_load_values_and_query
     items = []
     venues = File.open(File.expand_path(File.dirname(__FILE__)) + '/samples/venues.json', "r")
@@ -19,6 +19,16 @@ class TestSoulmate < Test::Unit::TestCase
     
     assert_equal 5, results.size
     assert_equal 'Citi Field', results[0]['term']
+  end
+
+  def test_can_query_double_quotes
+    loader = Soulmate::Loader.new('products')
+    loader.add("term" => 'White 4" x 12" Glass Tiles', "id" => 1, "score" => 10)
+
+    matcher = Soulmate::Matcher.new('products')
+    results = matcher.matches_for_term('4"')
+
+    assert_equal 1, results.size
   end
   
   def test_integration_can_load_values_and_query_via_aliases
@@ -97,7 +107,7 @@ class TestSoulmate < Test::Unit::TestCase
     assert_equal 9, results.first["score"]
     
   end
-  
+
   def test_prefixes_for_phrase
     loader = Soulmate::Loader.new('venues')
     
